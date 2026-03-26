@@ -12,7 +12,7 @@ import { TransitionLink } from '@/app/components/Pagetransition'
 const EASE: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
 // Pages with a white/light background — navbar text should be dark
-const LIGHT_BG_ROUTES = ['/work', '/about', '/blog'];
+const LIGHT_BG_ROUTES = ['/', '/work', '/about', '/blog'];
 
 const menuSlide: Variants = {
   initial: { x: 'calc(100% + 100px)' },
@@ -48,7 +48,7 @@ function NavbarBrand({ isDark }: { isDark: boolean }) {
           <span className="text-xs font-light opacity-60 transition-transform duration-500 ease-in-out group-hover:-translate-x-full">
             Code by
           </span>
-          <span className="ps-1 text-xs font-semibold tracking-wide transition-transform duration-500 ease-in-out group-hover:-translate-x-[50px]">
+          <span className="ps-1 text-xs font-semibold tracking-wide transition-transform duration-500 ease-in-out group-hover:-translate-x-[45px]">
             Ashish
           </span>
           <span className="absolute left-[88px] ps-1 text-xs font-semibold tracking-wide transition-transform duration-500 ease-in-out group-hover:-translate-x-[50px]">
@@ -245,8 +245,10 @@ export function Navbar() {
         ref={burger}
         className="fixed z-[101] scale-0 top-4 right-4 sm:top-5 sm:right-5 flex items-center gap-3"
       >
-        {/* Brand — matches current page background just like the top navbar */}
-        <NavbarBrand isDark={isLightRoute} />
+        {/* Brand — matches current page background, hidden when menu is open */}
+        <div className={`transition-all duration-300 ${isActive ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <NavbarBrand isDark={isLightRoute} />
+        </div>
 
         <Magnetic>
           <div
