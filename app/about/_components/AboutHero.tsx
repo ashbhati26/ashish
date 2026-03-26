@@ -89,7 +89,7 @@ export default function AboutHero() {
               className="absolute inset-x-0 will-change-transform"
             >
               <Image
-                src="/me.png"
+                src="/me-headphone.png"
                 fill
                 alt="Ashish Bhati"
                 className="object-cover object-top"
