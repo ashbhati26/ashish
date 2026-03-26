@@ -177,6 +177,12 @@ export function Navbar() {
       return;
     }
 
+    // FIX 2: Always reset navbar to visible on every page load/navigation.
+    // Without this, GSAP state from a previous page's scroll persists,
+    // causing the navbar to appear hidden until the user scrolls back to top.
+    gsap.set(navbar.current, { y: 0, opacity: 1 });
+    gsap.set(burger.current, { scale: 0 });
+
     ScrollTrigger.create({
       trigger: document.documentElement,
       start: 0,
@@ -191,7 +197,12 @@ export function Navbar() {
         setIsActive(false);
       },
     });
-  }, []);
+
+    // Clean up ScrollTrigger instances on unmount / route change
+    return () => {
+      ScrollTrigger.getAll().forEach(t => t.kill());
+    };
+  }, [pathname]); // re-run on route change so GSAP state is always fresh
 
   return (
     <>
@@ -227,8 +238,16 @@ export function Navbar() {
         </ul>
       </nav>
 
-      {/* floating burger */}
-      <div ref={burger} className="fixed z-[101] scale-0 top-5 right-5">
+      {/* FIX 1: Floating burger + brand together.
+          Brand always uses white text since it sits against the dark burger background.
+          Both elements share the same ref so they animate in/out together via GSAP. */}
+      <div
+        ref={burger}
+        className="fixed z-[101] scale-0 top-4 right-4 sm:top-5 sm:right-5 flex items-center gap-3"
+      >
+        {/* Brand — matches current page background just like the top navbar */}
+        <NavbarBrand isDark={isLightRoute} />
+
         <Magnetic>
           <div
             onClick={() => setIsActive(v => !v)}
@@ -236,9 +255,21 @@ export function Navbar() {
             style={{ backgroundColor: isActive ? 'var(--brand)' : 'var(--dark)' }}
           >
             <div className="relative w-5 h-[12px]">
-              <span className={`absolute left-0 w-full h-[1.5px] bg-white transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] origin-center ${isActive ? 'top-[5px] rotate-45' : 'top-0'}`} />
-              <span className={`absolute left-0 top-[5px] w-full h-[1.5px] bg-white transition-all duration-300 ${isActive ? 'opacity-0 scale-x-0' : 'opacity-100'}`} />
-              <span className={`absolute left-0 w-full h-[1.5px] bg-white transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] origin-center ${isActive ? 'top-[5px] -rotate-45' : 'top-[10px]'}`} />
+              <span
+                className={`absolute left-0 w-full h-[1.5px] bg-white transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] origin-center ${
+                  isActive ? 'top-[5px] rotate-45' : 'top-0'
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-[5px] w-full h-[1.5px] bg-white transition-all duration-300 ${
+                  isActive ? 'opacity-0 scale-x-0' : 'opacity-100'
+                }`}
+              />
+              <span
+                className={`absolute left-0 w-full h-[1.5px] bg-white transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] origin-center ${
+                  isActive ? 'top-[5px] -rotate-45' : 'top-[10px]'
+                }`}
+              />
             </div>
           </div>
         </Magnetic>
